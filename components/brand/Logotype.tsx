@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import { motion, useReducedMotion } from 'framer-motion'
 import { EASE } from '@/lib/motion'
+import { assetPath } from '@/lib/paths'
 import { cn } from '@/lib/utils'
 
 type Props = {
@@ -31,7 +32,7 @@ export function Logotype({ mode = 'static', className, delay = 0.55, priority = 
       transition={{ duration: 1.5, ease: EASE, delay, opacity: { duration: 0.01, delay } }}
     >
       <Image
-        src="/brand/logo_ivory.png"
+        src={assetPath('/brand/logo_ivory.png')}
         alt="Nishaan-a"
         fill
         sizes="(max-width: 1024px) 120px, 200px"
