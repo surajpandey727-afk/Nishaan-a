@@ -23,10 +23,6 @@ export function Logotype({ mode = 'static', className, delay = 0.55, priority = 
   const reduce = useReducedMotion()
   const animated = mode === 'mask' && !reduce
 
-  const imageLoader = ({ src }: { src: string }) => {
-    return publicPath(src)
-  }
-
   return (
     <motion.div
       className={cn('relative block h-auto', className)}
@@ -36,8 +32,7 @@ export function Logotype({ mode = 'static', className, delay = 0.55, priority = 
       transition={{ duration: 1.5, ease: EASE, delay, opacity: { duration: 0.01, delay } }}
     >
       <Image
-        loader={imageLoader}
-        src="/brand/logo_ivory.png"
+        src={publicPath('/brand/logo_ivory.png')}
         alt="Nishaan-a"
         fill
         sizes="(max-width: 1024px) 120px, 200px"

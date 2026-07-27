@@ -79,8 +79,7 @@ export function Monogram({
         transition={magnetTransition}
       >
         <Image
-          loader={imageLoader}
-          src="/brand/monogram_ivory.png"
+          src={publicPath('/brand/monogram_ivory.png')}
           alt=""
           fill
           sizes="(max-width: 990px) 200px, 400px"
