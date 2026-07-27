@@ -3,6 +3,8 @@ import { clients } from '@/content/clients'
 import { insights } from '@/content/practice'
 import { site } from '@/lib/site'
 
+export const dynamic = 'force-static'
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
     '',

@@ -6,6 +6,7 @@ import { site } from '@/lib/site'
 export const alt = `${site.name} — ${site.tagline}`
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
+export const dynamic = 'force-static'
 
 const read = (path: string) =>
   `data:image/png;base64,${readFileSync(join(process.cwd(), path)).toString('base64')}`

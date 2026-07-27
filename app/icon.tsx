@@ -4,6 +4,7 @@ import { join } from 'node:path'
 
 export const size = { width: 64, height: 64 }
 export const contentType = 'image/png'
+export const dynamic = 'force-static'
 
 /** Favicon: the supplied monogram, unaltered, on Ox Blood. */
 export default function Icon() {
