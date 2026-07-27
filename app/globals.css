@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   BRAND FONT — ITC Avant Garde Gothic Pro
+   Place the licensed webfonts in /public/fonts using these
+   exact filenames and the whole site picks them up. Until then
+   the stack falls back to Century Gothic / URW Gothic.
+   ============================================================ */
+@font-face {
+  font-family: 'ITC Avant Garde Gothic Pro';
+  src: url('/fonts/ITCAvantGardeGothicPro-Bk.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ITC Avant Garde Gothic Pro';
+  src: url('/fonts/ITCAvantGardeGothicPro-Md.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ITC Avant Garde Gothic Pro';
+  src: url('/fonts/ITCAvantGardeGothicPro-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --font-avantgarde: 'ITC Avant Garde Gothic Pro';
+
+    /* Colour tokens — mirrored in tailwind.config.ts */
+    --ox: #3e000c;
+    --ox-deep: #2c0008;
+    --ox-raise: #4a0812;
+    --ox-raise-2: #571120;
+    --ivory: #f7efec;
+    --ivory-mark: #fdfeec;
+
+    /* Motion tokens */
+    --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
+    --dur-fast: 220ms;
+    --dur-base: 450ms;
+    --dur-slow: 1000ms;
+  }
+
+  * {
+    @apply border-line;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-black text-ivory antialiased;
+    font-family: var(--font-avantgarde), 'Century Gothic', 'Avant Garde', 'URW Gothic', sans-serif;
+    font-weight: 400;
+    line-height: 1.7;
+    overflow-x: hidden;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    @apply bg-ivory text-ox;
+  }
+
+  :focus-visible {
+    outline: 1.5px solid var(--ivory);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 700;
+    text-wrap: balance;
+  }
+
+  /* Lenis */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+}
+
+@layer components {
+  .shell {
+    @apply mx-auto w-full max-w-shell px-gutter;
+  }
+  .rule {
+    @apply h-px w-full border-0 bg-line;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
