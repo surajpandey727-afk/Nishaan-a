@@ -1,10 +1,24 @@
 /**
  * Path utility for GitHub Pages deployment.
- * Prefixes asset paths with the repository name when deployed.
+ * Dynamically constructs the correct base path for static exports.
  */
 
-const BASE_PATH = typeof window !== 'undefined' && window.location.pathname.includes('Nishaan-a') ? '/Nishaan-a' : ''
+export function getBasePath(): string {
+  // During build time with GITHUB_ACTIONS, basePath is set to /Nishaan-a
+  // We need to detect this and apply it to public assets
+  if (typeof window === 'undefined') {
+    // Server-side: use environment variable if available
+    return process.env.GITHUB_ACTIONS ? '/Nishaan-a' : ''
+  }
+  // Client-side: determine from current URL
+  const pathname = window.location.pathname
+  if (pathname.includes('/Nishaan-a/')) {
+    return '/Nishaan-a'
+  }
+  return ''
+}
 
-export function assetPath(path: string): string {
-  return `${BASE_PATH}${path}`
+export function publicPath(path: string): string {
+  const basePath = getBasePath()
+  return `${basePath}${path}`
 }

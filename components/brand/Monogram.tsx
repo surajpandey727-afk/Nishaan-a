@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useRef, useState } from 'react'
 import { EASE } from '@/lib/motion'
-import { assetPath } from '@/lib/paths'
+import { publicPath } from '@/lib/paths'
 import { cn } from '@/lib/utils'
 
 type Props = {
@@ -52,6 +52,10 @@ export function Monogram({
     })
   }
 
+  const imageLoader = ({ src }: { src: string }) => {
+    return publicPath(src)
+  }
+
   const animated = mode === 'assemble' && !reduce
   const magnetTransition = { duration: 0.9, ease: EASE }
 
@@ -75,7 +79,8 @@ export function Monogram({
         transition={magnetTransition}
       >
         <Image
-          src={assetPath('/brand/monogram_ivory.png')}
+          loader={imageLoader}
+          src="/brand/monogram_ivory.png"
           alt=""
           fill
           sizes="(max-width: 990px) 200px, 400px"
