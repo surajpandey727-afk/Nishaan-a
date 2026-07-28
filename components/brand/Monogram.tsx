@@ -52,10 +52,6 @@ export function Monogram({
     })
   }
 
-  const imageLoader = ({ src }: { src: string }) => {
-    return publicPath(src)
-  }
-
   const animated = mode === 'assemble' && !reduce
   const magnetTransition = { duration: 0.9, ease: EASE }
 
