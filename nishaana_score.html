@@ -1,0 +1,319 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#170D0F;
+    --panel:#231316;
+    --line:#3A2226;
+    --ivory:#F3EFE7;
+    --ivory-dim:#B4A89E;
+    --oxblood:#7A1220;
+    --oxblood-bright:#B4243A;
+  }
+  *{box-sizing:border-box;}
+  #nishaan-root{
+    background:var(--bg);
+    color:var(--ivory);
+    font-family:'Inter',sans-serif;
+    min-height:100%;
+    padding:64px 20px 88px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .ns-wrap{width:100%;max-width:680px;}
+  .ns-eyebrow{
+    font-size:12px;
+    letter-spacing:0.02em;
+    color:var(--ivory-dim);
+    margin-bottom:16px;
+    font-weight:500;
+  }
+  .ns-eyebrow b{color:var(--ivory);font-weight:600;}
+  .ns-title{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:clamp(32px,5vw,46px);
+    line-height:1.08;
+    margin:0 0 14px;
+    letter-spacing:-0.01em;
+  }
+  .ns-sub{
+    color:var(--ivory-dim);
+    font-size:15px;
+    line-height:1.65;
+    max-width:480px;
+    margin-bottom:44px;
+  }
+  .ns-console{
+    display:flex;
+    gap:10px;
+    border:1px solid var(--line);
+    background:var(--panel);
+    border-radius:2px;
+    padding:6px;
+  }
+  .ns-input{
+    flex:1;
+    background:transparent;
+    border:none;
+    outline:none;
+    color:var(--ivory);
+    font-family:'Inter',sans-serif;
+    font-size:16px;
+    padding:12px 14px;
+  }
+  .ns-input::placeholder{color:#6E5A5C;}
+  .ns-btn{
+    background:var(--ivory);
+    color:var(--bg);
+    border:none;
+    border-radius:1px;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    letter-spacing:0.02em;
+    padding:0 22px;
+    cursor:pointer;
+    transition:opacity .15s ease;
+  }
+  .ns-btn:hover{opacity:0.85;}
+  .ns-btn:disabled{opacity:0.4;cursor:not-allowed;}
+  .ns-btn:focus-visible, .ns-input:focus-visible{outline:2px solid var(--oxblood-bright);outline-offset:2px;}
+
+  .ns-loading{
+    margin-top:28px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--ivory-dim);
+    display:none;
+    flex-direction:column;
+    gap:8px;
+  }
+  .ns-loading.active{display:flex;}
+  .ns-loading .tick{opacity:0;animation:ns-fade .4s ease forwards;}
+  .ns-loading .tick::before{content:"— ";color:var(--oxblood-bright);}
+  @keyframes ns-fade{to{opacity:1;}}
+
+  .ns-error{
+    margin-top:24px;
+    border:1px solid var(--line);
+    background:var(--panel);
+    color:#E0B3AE;
+    font-size:13.5px;
+    padding:14px 16px;
+    border-radius:2px;
+    display:none;
+  }
+  .ns-error.active{display:block;}
+
+  .ns-report{display:none;margin-top:52px;}
+  .ns-report.active{display:block;animation:ns-fade .5s ease;}
+
+  .ns-score-row{
+    display:flex;
+    align-items:baseline;
+    gap:20px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:30px;
+    margin-bottom:30px;
+    flex-wrap:wrap;
+  }
+  .ns-score-num{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    font-size:60px;
+    color:var(--ivory);
+    line-height:1;
+  }
+  .ns-score-suffix{font-size:20px;color:var(--ivory-dim);}
+  .ns-verdict{
+    font-family:'Fraunces',serif;
+    font-size:19px;
+  }
+  .ns-stars{
+    font-family:'IBM Plex Mono',monospace;
+    color:var(--oxblood-bright);
+    letter-spacing:2px;
+    font-size:14px;
+    margin-top:4px;
+  }
+  .ns-summary{
+    font-size:15px;
+    line-height:1.7;
+    color:#DCD5CB;
+    margin-bottom:46px;
+  }
+
+  .ns-cat{
+    padding:18px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .ns-cat-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:9px;
+    gap:12px;
+  }
+  .ns-cat-label{font-size:14px;font-weight:500;}
+  .ns-cat-nums{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--ivory-dim);
+    white-space:nowrap;
+  }
+  .ns-cat-nums b{color:var(--oxblood-bright);font-weight:600;}
+  .ns-track{
+    position:relative;
+    height:4px;
+    background:
+      repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 20%);
+    background-color:#2C1A1D;
+    margin-bottom:10px;
+    overflow:hidden;
+  }
+  .ns-fill{
+    position:absolute;left:0;top:0;bottom:0;
+    background:var(--oxblood-bright);
+    width:0%;
+    transition:width .8s cubic-bezier(.2,.8,.2,1);
+  }
+  .ns-rationale{
+    font-size:13px;
+    color:var(--ivory-dim);
+    line-height:1.6;
+  }
+
+  @media(max-width:520px){
+    .ns-score-num{font-size:46px;}
+    .ns-console{flex-direction:column;}
+    .ns-btn{padding:12px;}
+  }
+</style>
+
+<div id="nishaan-root">
+  <div class="ns-wrap">
+    <div class="ns-eyebrow"><b>Nishaan-a</b> | Diagnostic</div>
+    <h1 class="ns-title">The Nishaan Score</h1>
+    <p class="ns-sub">Evidence before instinct, applied to a name. Score a candidate against our eight-parameter naming framework — weighted, not averaged — and read the reasoning behind every number.</p>
+
+    <div class="ns-console">
+      <input id="ns-input" class="ns-input" type="text" placeholder="Enter a name to score" autocomplete="off" />
+      <button id="ns-btn" class="ns-btn">RUN DIAGNOSTIC</button>
+    </div>
+
+    <div id="ns-loading" class="ns-loading"></div>
+    <div id="ns-error" class="ns-error"></div>
+    <div id="ns-report" class="ns-report"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // NOTE: This calls a same-origin /api/nishaan-score proxy — see integration notes.
+  // It does NOT call api.anthropic.com directly, on purpose: this is a static
+  // GitHub Pages site with no server, so the key and the scoring prompt cannot
+  // live in this file. See the Cloudflare Worker snippet provided alongside this file.
+  const SCORE_ENDPOINT = "/api/nishaan-score";
+
+  const input = document.getElementById('ns-input');
+  const btn = document.getElementById('ns-btn');
+  const loadingEl = document.getElementById('ns-loading');
+  const errorEl = document.getElementById('ns-error');
+  const reportEl = document.getElementById('ns-report');
+
+  const LOADING_LINES = [
+    "Reading structural signature...",
+    "Cross-referencing archetype library...",
+    "Weighing cultural and narrative load...",
+    "Compiling weighted readout..."
+  ];
+
+  function runLoadingSequence(){
+    loadingEl.innerHTML = '';
+    loadingEl.classList.add('active');
+    LOADING_LINES.forEach((line, i) => {
+      const d = document.createElement('div');
+      d.className = 'tick';
+      d.textContent = line;
+      d.style.animationDelay = (i * 0.35) + 's';
+      loadingEl.appendChild(d);
+    });
+  }
+
+  function starString(n){
+    return '★'.repeat(n) + '☆'.repeat(5 - n);
+  }
+
+  function renderReport(data){
+    const catsHtml = data.categories.map(c => {
+      const pct = Math.max(0, Math.min(100, (c.raw_score / 5) * 100));
+      const contrib = Math.round((c.raw_score / 5) * c.weight * 10) / 10;
+      return `
+        <div class="ns-cat">
+          <div class="ns-cat-head">
+            <div class="ns-cat-label">${c.label}</div>
+            <div class="ns-cat-nums"><b>${c.raw_score}</b>/5 &nbsp;·&nbsp; ${contrib}/${c.weight}</div>
+          </div>
+          <div class="ns-track"><div class="ns-fill" style="width:0%" data-w="${pct}"></div></div>
+          <div class="ns-rationale">${c.rationale}</div>
+        </div>`;
+    }).join('');
+
+    reportEl.innerHTML = `
+      <div class="ns-score-row">
+        <div>
+          <span class="ns-score-num">${data.weighted_total}</span><span class="ns-score-suffix">/100</span>
+        </div>
+        <div>
+          <div class="ns-verdict">${data.verdict.band}</div>
+          <div class="ns-stars">${starString(data.verdict.stars)}</div>
+        </div>
+      </div>
+      <div class="ns-summary">${data.summary}</div>
+      ${catsHtml}
+    `;
+    reportEl.classList.add('active');
+    requestAnimationFrame(() => {
+      reportEl.querySelectorAll('.ns-fill').forEach(el => {
+        el.style.width = el.getAttribute('data-w') + '%';
+      });
+    });
+  }
+
+  async function runDiagnostic(){
+    const name = input.value.trim();
+    if(!name) { input.focus(); return; }
+
+    btn.disabled = true;
+    errorEl.classList.remove('active');
+    reportEl.classList.remove('active');
+    runLoadingSequence();
+
+    try {
+      const response = await fetch(SCORE_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name })
+      });
+      if (!response.ok) throw new Error("Scoring engine returned an error.");
+      const parsed = await response.json();
+
+      loadingEl.classList.remove('active');
+      renderReport(parsed);
+    } catch (err) {
+      loadingEl.classList.remove('active');
+      errorEl.textContent = "Diagnostic failed to complete. Try again in a moment.";
+      errorEl.classList.add('active');
+      console.error("Nishaan Score error:", err);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  btn.addEventListener('click', runDiagnostic);
+  input.addEventListener('keydown', (e) => { if(e.key === 'Enter') runDiagnostic(); });
+})();
+</script>
