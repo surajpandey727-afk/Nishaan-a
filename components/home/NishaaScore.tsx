@@ -328,6 +328,8 @@ export function NishaaScore() {
       })
     }
 
+    const SCORE_ENDPOINT = 'https://nishaan-score-worker.nishaan-score-worker.workers.dev'
+
     async function runDiagnostic() {
       const name = input.value.trim()
       if (!name) {
@@ -341,7 +343,7 @@ export function NishaaScore() {
       runLoadingSequence()
 
       try {
-        const response = await fetch('/Nishaan-a/api/nishaan-score', {
+        const response = await fetch(SCORE_ENDPOINT, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name }),
