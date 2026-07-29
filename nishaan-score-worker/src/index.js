@@ -1,11 +1,11 @@
-// Cloudflare Worker — proxies name-scoring requests to the Gemini API.
+// Cloudflare Worker — proxies name-scoring requests to the Groq chat completion API.
 // Deploy this on Cloudflare's free tier. It is the only place the API key
 // and the scoring framework prompt live — never in the GitHub Pages site.
 //
 // Setup:
 //   1. npm create cloudflare@latest nishaan-score-worker
 //   2. Replace the generated worker's src/index.js with this file
-//   3. wrangler secret put GEMINI_API_KEY   (paste your key when prompted)
+//   3. wrangler secret put GROQ_API_KEY   (paste your key when prompted)
 //   4. Edit ALLOWED_ORIGIN below to your live site's origin
 //   5. wrangler deploy
 //   6. Copy the resulting *.workers.dev URL into SCORE_ENDPOINT in the
@@ -89,39 +89,83 @@ export default {
 
     // Simple per-IP rate limit could be added here via Cloudflare KV if abuse becomes an issue.
 
-    if (!env.GEMINI_API_KEY) {
+    if (!env.GROQ_API_KEY) {
       return new Response(JSON.stringify({ error: "Scoring engine is not configured." }), {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
       });
     }
 
-    const apiResponse = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + env.GEMINI_API_KEY, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        contents: [{ role: "user", parts: [{ text: `${SYSTEM_PROMPT}\n\nScore this name: "${name}"` }] }],
-        generationConfig: {
-          temperature: 0.3,
-          responseMimeType: "application/json",
-        },
-      }),
-    });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+    let apiResponse;
 
-    if (!apiResponse.ok) {
-      const errText = await apiResponse.text();
-      return new Response(JSON.stringify({ error: "Scoring engine unavailable.", detail: errText }), {
+    try {
+      apiResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${env.GROQ_API_KEY}`,
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            {
+              role: "system",
+              content: "You are an assistant that returns only valid JSON.",
+            },
+            {
+              role: "user",
+              content: `${SYSTEM_PROMPT}\n\nScore this name: "${name}"`,
+            },
+          ],
+          temperature: 0.2,
+          response_format: { type: "json_object" },
+        }),
+      });
+    } catch (error) {
+      if (error.name === "AbortError") {
+        return new Response(JSON.stringify({ error: "Scoring engine timeout." }), {
+          status: 504,
+          headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
+        });
+      }
+      return new Response(JSON.stringify({ error: "Network failure contacting scoring engine." }), {
+        status: 502,
+        headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
+
+    const errText = await apiResponse.text();
+    let responseJson;
+    try {
+      responseJson = JSON.parse(errText);
+    } catch {
+      return new Response(JSON.stringify({ error: "Malformed response from scoring engine." }), {
         status: 502,
         headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
       });
     }
 
-    const data = await apiResponse.json();
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-    if (!text) {
-      return new Response(JSON.stringify({ error: "No response from scoring engine." }), {
+    if (!apiResponse.ok) {
+      let detail = responseJson.error?.message || "Scoring engine unavailable.";
+      if (apiResponse.status === 401 || apiResponse.status === 403) {
+        detail = "Invalid API key for Groq.";
+      } else if (apiResponse.status === 429) {
+        detail = "Rate limit exceeded for Groq API.";
+      }
+      return new Response(JSON.stringify({ error: "Scoring engine unavailable.", detail }), {
+        status: 502,
+        headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
+      });
+    }
+
+    const content = responseJson?.choices?.[0]?.message?.content;
+    if (typeof content !== "string") {
+      return new Response(JSON.stringify({ error: "Malformed response from scoring engine." }), {
         status: 502,
         headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
       });
@@ -129,9 +173,15 @@ export default {
 
     let parsed;
     try {
-      const clean = text.replace(/```json|```/g, "").trim();
-      parsed = JSON.parse(clean);
+      parsed = JSON.parse(content);
     } catch {
+      return new Response(JSON.stringify({ error: "Malformed response from scoring engine." }), {
+        status: 502,
+        headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
+      });
+    }
+
+    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
       return new Response(JSON.stringify({ error: "Malformed response from scoring engine." }), {
         status: 502,
         headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
