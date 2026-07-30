@@ -43,5 +43,9 @@ export default function AdminPage() {
     )
   }
 
-  return <AdminAnalyticsPage />
+  return (
+    <div className="shell">
+      <AdminAnalyticsPage />
+    </div>
+  )
 }
