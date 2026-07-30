@@ -20,6 +20,78 @@ const ALLOWED_ORIGINS = new Set([
   "https://127.0.0.1:3000",
 ]);
 
+function normalizeString(value) {
+  return value ? String(value) : ''
+}
+
+function buildVisitorKey(request, cf) {
+  return [
+    normalizeString(request.headers.get('User-Agent')).slice(0, 200),
+    normalizeString(request.headers.get('Accept-Language')),
+    normalizeString(cf?.colo),
+    normalizeString(cf?.asn),
+    normalizeString(cf?.country),
+    normalizeString(cf?.region),
+    normalizeString(cf?.city),
+    normalizeString(cf?.continent),
+  ].join('|')
+}
+
+function makeUuidFromHex(hex) {
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20, 32)}`
+}
+
+async function hashString(value) {
+  const encoded = new TextEncoder().encode(value)
+  const digest = await crypto.subtle.digest('SHA-256', encoded)
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+}
+
+async function getAnonymousIds(request, cf) {
+  const visitorKey = buildVisitorKey(request, cf)
+  const visitorHex = await hashString(visitorKey)
+  const sessionHex = await hashString(`${visitorKey}|${new Date().toISOString().slice(0, 13)}`)
+
+  return {
+    visitor_id: makeUuidFromHex(visitorHex),
+    session_id: makeUuidFromHex(sessionHex),
+  }
+}
+
+function safeNumber(value) {
+  const number = Number(value)
+  return Number.isFinite(number) ? number : 0
+}
+
+async function recordSupabaseAnalytics(payload, env) {
+  if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
+    return
+  }
+
+  const endpoint = `${env.SUPABASE_URL.replace(/\/$/, '')}/rest/v1/rpc/analytics_ingest_score_event`
+  const headers = {
+    apikey: env.SUPABASE_SERVICE_ROLE_KEY,
+    Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+    'Content-Type': 'application/json',
+    Prefer: 'return=minimal',
+  }
+
+  const start = Date.now()
+  try {
+    await fetch(endpoint, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ payload }),
+    })
+  } catch {
+    // Fire-and-forget analytics must never affect scoring.
+  } finally {
+    payload.supabase_latency_ms = Date.now() - start
+  }
+}
+
 const SYSTEM_PROMPT = `You are Nishaan-a™, a world-class AI Brand Strategist trained on psychology, semiotics, behavioural economics, archetypal branding, naming science, storytelling and linguistic analysis.
 
 You do not merely score names.

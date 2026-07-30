@@ -358,7 +358,7 @@ export function NishaaScore() {
         } else {
           renderReport(data)
         }
-      } catch (error) {
+      } catch {
         loadingEl.classList.remove('active')
         errorEl.textContent = 'Network error. Check your connection.'
         errorEl.classList.add('active')

@@ -6,6 +6,7 @@ import { PageTransition } from '@/components/layout/PageTransition'
 import { ScrollProgress } from '@/components/layout/ScrollProgress'
 import { SmoothScroll } from '@/components/layout/SmoothScroll'
 import { site } from '@/lib/site'
+import { PageViewTracker } from '@/components/analytics/PageViewTracker'
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -83,6 +84,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </main>
           <Footer />
         </SmoothScroll>
+        <PageViewTracker />
       </body>
     </html>
   )
