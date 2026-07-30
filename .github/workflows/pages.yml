@@ -25,6 +25,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://surajpandey727-afk.github.io/Nishaan-a
+          NEXT_PUBLIC_SUPABASE_URL: https://azusdzavsukgaxxmvlaw.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: sb_publishable_vWzFh7jlIz8D6TzFuti7fg_ySboWUiN
+          NEXT_PUBLIC_ADMIN_DASHBOARD_KEY: nishaan-admin-2026
       - name: Prepare GitHub Pages artifact
         run: touch ./out/.nojekyll && ls -la && ls -la out || true
       - name: Setup Pages
