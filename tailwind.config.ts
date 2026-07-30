@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+import tailwindcssAnimate from 'tailwindcss-animate'
 
 /**
  * NISHAAN-A — design tokens
@@ -70,6 +71,6 @@ const config: Config = {
       animation: { sweep: 'sweep 1.6s cubic-bezier(0.22,1,0.36,1) forwards' },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [tailwindcssAnimate],
 }
 export default config

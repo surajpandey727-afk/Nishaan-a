@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Eyebrow } from '@/components/ui/eyebrow'
 import { EASE, line as lineVariant, stagger } from '@/lib/motion'
 
-const HEADLINE = ['Strategy is the', 'decision everything', 'else inherits.']
+const HEADLINE = ['Strategy is the decision everything else inherits.']
 
 export function Hero() {
   const reduce = useReducedMotion()
@@ -32,7 +32,7 @@ export function Hero() {
 
       <div className="absolute inset-x-gutter top-[clamp(108px,16vh,180px)] flex items-center gap-4">
         <Monogram mode="assemble" magnetic className="w-[clamp(96px,9vw,150px)]" delay={0.25} />
-        <Eyebrow>Brand strategy practice · Mumbai</Eyebrow>
+        <Eyebrow>Nishaan-a brand strategy. before the brief.</Eyebrow>
       </div>
 
       <div className="shell grid w-full items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,42vw)] lg:gap-[clamp(40px,8vw,120px)] xl:grid-cols-[minmax(0,1fr)_minmax(0,38vw)]">
@@ -56,9 +56,10 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: EASE, delay: 0.9 }}
           >
-            Nishaan-a is a strategy practice that works upstream on clarity,
-            positioning and the architecture a business is actually run on. Execution follows,
-            through specialists who earn it.
+            The work starts with diagnosis.
+            What the business actually is,
+            where the gap sits,
+            and what position can credibly be held.
           </motion.p>
 
           <motion.div
@@ -70,7 +71,6 @@ export function Hero() {
             <Button href="/contact" variant="solid" withArrow>
               Start a conversation
             </Button>
-            <Button href="/methodology">See how we work</Button>
           </motion.div>
         </div>
 
