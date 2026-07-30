@@ -287,6 +287,46 @@ export default {
       });
     }
 
+    // Fire-and-forget analytics to Supabase
+    const cf = request.cf || {}
+    const ids = await getAnonymousIds(request, cf)
+    const groqUsage = responseJson?.usage || {}
+
+    recordSupabaseAnalytics({
+      ...ids,
+      submitted_name: name,
+      final_score: parsed.weighted_total,
+      processing_time_ms: 0,
+      success: true,
+      failure_reason: null,
+      model: responseJson?.model || 'llama-3.3-70b-versatile',
+      prompt_tokens: groqUsage.prompt_tokens || 0,
+      completion_tokens: groqUsage.completion_tokens || 0,
+      total_tokens: groqUsage.total_tokens || 0,
+      groq_latency_ms: 0,
+      http_status: 200,
+      estimated_cost: 0,
+      worker_status: 'ok',
+      groq_status: 'ok',
+      api_errors: 0,
+      pages_viewed: 0,
+      worker_latency_ms: 0,
+      city: cf.city || '',
+      country: cf.country || '',
+      region: cf.region || '',
+      continent: cf.continent || '',
+      timezone: cf.timezone || '',
+      language: request.headers.get('Accept-Language') || '',
+      browser: request.headers.get('User-Agent') || '',
+      operating_system: '',
+      device_type: '',
+      screen_resolution: '',
+      utm_source: '',
+      utm_medium: '',
+      utm_campaign: '',
+      referrer: request.headers.get('Referer') || '',
+    }, env)
+
     return new Response(JSON.stringify(parsed), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
