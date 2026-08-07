@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000)",
+      "Bash(npm run *)",
+      "Bash(node node_modules/vitest/vitest.mjs run)",
+      "Bash(node node_modules/@playwright/test/cli.js test)",
+      "Bash(node node_modules/typescript/bin/tsc --noEmit)"
     ]
   }
 }
